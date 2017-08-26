@@ -8,7 +8,6 @@ provider:
   timeout: 5
   environment:
     STAGE: ${self:custom.stage}
-    ORIGIN: ${secret:settings:api.origin}
     RTFM_TIMESERIES_TABLE: rtfm-timeseries-data-${self:custom.stage}
   iamRoleStatements:
     - Effect: Allow
