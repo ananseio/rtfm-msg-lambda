@@ -28,7 +28,17 @@ export class SNSHeartbeatMessageHandler extends FunctionHandler {
       return [...allHbs, ...hbts.heartbeat];
     }, []);
 
-    this.log.info(allheartbeats);
+    this.log.debug({allheartbeats});
+
+    await Promise.all(allheartbeats.map((heartbeat) => {
+      const id = `${heartbeat.DeviceID}-${heartbeat.BeatCount}-${heartbeat.BeatTime}`;
+      const timestamp = heartbeat.Timestamp;
+      return this.db.putHeartbeat(id, timestamp, heartbeat)
+        .catch((err) => {
+          this.log.warn({err}, 'dynamodb error occurred');
+        });
+    }));
+
     return;
   }
 }

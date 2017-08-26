@@ -1,5 +1,6 @@
 import { utils } from '@ananseio/serverless-common';
 import { DynamoDB } from 'aws-sdk';
+import { Heartbeat } from './models/heartbeat';
 import { Settings } from '../settings';
 
 /**
@@ -8,10 +9,10 @@ import { Settings } from '../settings';
 export class DB {
   private db = new DynamoDB.DocumentClient();
 
-  public async putMessage(id: string, message: string): Promise<boolean> {
+  public async putHeartbeat(id: string, timestamp: number, heartbeat: Heartbeat): Promise<boolean> {
     return !!await utils.checkCondition(this.db.put({
       TableName: Settings.rtfmTimeSeriesTable,
-      Item: { id, message },
+      Item: { id, timestamp, heartbeat },
       ConditionExpression: 'attribute_not_exists(id)'
     }).promise());
   }
