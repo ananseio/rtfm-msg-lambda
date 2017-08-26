@@ -26,7 +26,7 @@ custom:
 
 functions:
   sns-process:
-    handler: dist/lambda.sns-process
+    handler: dist/lambda/sns-process
 
 resources:
   Resources:
