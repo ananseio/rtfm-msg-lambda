@@ -17,10 +17,10 @@ export class DB {
     }).promise());
   }
 
-  public async getMessage(id: string): Promise<string> {
+  public async getHeartbeat(id: string, timestamp: number): Promise<Heartbeat> {
     return (await this.db.get({
       TableName: Settings.rtfmTimeSeriesTable,
-      Key: { id }
-    }).promise()).Item!.message as string;
+      Key: { id, timestamp }
+    }).promise()).Item!.heartbeat as Heartbeat;
   }
 }

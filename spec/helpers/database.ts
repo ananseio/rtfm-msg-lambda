@@ -21,10 +21,16 @@ async function initDB() {
     AttributeDefinitions: [{
       AttributeName: 'id',
       AttributeType: 'S'
+    }, {
+      AttributeName: 'timestamp',
+      AttributeType: 'N',
     }],
     KeySchema: [{
       AttributeName: 'id',
       KeyType: 'HASH'
+    }, {
+      AttributeName: 'timestamp',
+      KeyType: 'RANGE'
     }],
     ProvisionedThroughput: {
       ReadCapacityUnits: 1,
