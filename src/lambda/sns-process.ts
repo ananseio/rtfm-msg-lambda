@@ -14,7 +14,22 @@ export class SNSHeartbeatMessageHandler extends FunctionHandler {
   @Handler
   @Log()
   public async handler(event: SNSHeartbeatMessageEvent) {
-    this.log.debug({event}, 'msg received');
+    const records = event.Records;
+
+    const allheartbeats = records.reduce((accum, snsMessage) => {
+      const msgBuf = new Buffer(snsMessage!.Sns!.Message! || '', 'base64');
+      const heartbeats = JSON.parse(msgBuf.toString());
+
+      const hbArray = Object.keys(heartbeats)
+        .reduce((arr, deviceID) => {
+          return [...arr, heartbeats[deviceID]];
+        }, []);
+
+      return [...accum, hbArray];
+    }, []);
+
+    this.log.info(allheartbeats);
+
     return;
   }
 }
