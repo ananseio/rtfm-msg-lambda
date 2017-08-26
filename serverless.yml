@@ -1,0 +1,46 @@
+service: rtfm-msg-lambda
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: us-west-2
+  memorySize: 128
+  timeout: 5
+  environment:
+    STAGE: ${self:custom.stage}
+    ORIGIN: ${secret:settings:api.origin}
+    RTFM_TIMESERIES_TABLE: rtfm-timeseries-data-${self:custom.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+        - dynamodb:*
+      Resource: "*"
+
+plugins:
+  - "@ananseio/lambda-secrets"
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  secrets:
+    config: ${s3:rtfm-secrets/secrets.json}
+
+functions:
+  sns-process:
+    handler: dist/lambda.sns-process
+
+resources:
+  Resources:
+    users:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: rtfm-timeseries-data-${self:custom.stage}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

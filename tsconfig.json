@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "plugins": [
+      {
+        "name": "tslint-language-service",
+        "ignoreDefinitionFiles": true,
+        "configFile": "./tslint.json"
+      }
+    ],
+    "strict": true,
+    "types": [
+      "node",
+      "jasmine"
+    ]
+  },
+  "compileOnSave": true
+}
