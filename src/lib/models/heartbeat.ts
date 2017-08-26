@@ -21,6 +21,8 @@ export class HeartbeatTimeseries {
 }
 
 export interface Heartbeat {
+  id?: string;
+  timestamp?: number;
   Timestamp: number;
   DeviceID: number;
   BeatCount: number;

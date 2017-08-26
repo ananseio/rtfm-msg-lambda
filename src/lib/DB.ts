@@ -12,7 +12,7 @@ export class DB {
   public async putHeartbeat(id: string, timestamp: number, heartbeat: Heartbeat): Promise<boolean> {
     return !!await utils.checkCondition(this.db.put({
       TableName: Settings.rtfmTimeSeriesTable,
-      Item: { id, timestamp, heartbeat },
+      Item: { ...heartbeat, id, timestamp },
       ConditionExpression: 'attribute_not_exists(id)'
     }).promise());
   }
@@ -21,6 +21,6 @@ export class DB {
     return (await this.db.get({
       TableName: Settings.rtfmTimeSeriesTable,
       Key: { id, timestamp }
-    }).promise()).Item!.heartbeat as Heartbeat;
+    }).promise()).Item! as Heartbeat;
   }
 }

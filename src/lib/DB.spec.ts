@@ -37,6 +37,6 @@ describe('database', () => {
     expect(await db.getHeartbeat(
       String(heartbeat.DeviceID),
       heartbeat.Timestamp)
-    ).toEqual(heartbeat);
+    ).toEqual({...heartbeat, id: String(heartbeat.DeviceID), timestamp: heartbeat.Timestamp});
   });
 });
