@@ -1,5 +1,7 @@
 import { FunctionHandler, Handler, Log, Logger } from '@ananseio/serverless-common';
 import { DB } from '../lib';
+import { HeartbeatDeviceTS, HeartbeatTimeseries } from '../lib/models/heartbeat';
+import { flattenSnsMessage } from '../lib/heartbeat';
 import { SNSHeartbeatMessageEvent } from '../public';
 
 /**
@@ -16,20 +18,17 @@ export class SNSHeartbeatMessageHandler extends FunctionHandler {
   public async handler(event: SNSHeartbeatMessageEvent) {
     const records = event.Records;
 
-    const allheartbeats = records.reduce((accum, snsMessage) => {
+    const allheartbeats = records.reduce((allHbs, snsMessage) => {
       const msgBuf = new Buffer(snsMessage!.Sns!.Message! || '', 'base64');
-      const heartbeats = JSON.parse(msgBuf.toString());
+      const heartbeats: HeartbeatDeviceTS = JSON.parse(msgBuf.toString());
 
-      const hbArray = Object.keys(heartbeats)
-        .reduce((arr, deviceID) => {
-          return [...arr, heartbeats[deviceID]];
-        }, []);
+      const hbts = new HeartbeatTimeseries();
+      flattenSnsMessage(heartbeats).forEach(hb => hbts.add(hb));
 
-      return [...accum, hbArray];
+      return [...allHbs, ...hbts.heartbeat];
     }, []);
 
     this.log.info(allheartbeats);
-
     return;
   }
 }
