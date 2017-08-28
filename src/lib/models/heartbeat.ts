@@ -1,7 +1,3 @@
-export interface HeartbeatDeviceTS {
-  [DeviceId: string]: Heartbeat[]
-}
-
 export class HeartbeatTimeseries {
   heartbeat: Heartbeat[] = [];
   entries: { [timeSeriesKey: string]: boolean } = {};
@@ -22,7 +18,6 @@ export class HeartbeatTimeseries {
 
 export interface Heartbeat {
   id?: string;
-  timestamp?: number;
   Timestamp: number;
   DeviceID: number;
   BeatCount: number;

@@ -9,18 +9,18 @@ import { Settings } from '../settings';
 export class DB {
   private db = new DynamoDB.DocumentClient();
 
-  public async putHeartbeat(id: string, timestamp: number, heartbeat: Heartbeat): Promise<boolean> {
+  public async putHeartbeat(heartbeat: Heartbeat): Promise<boolean> {
     return !!await utils.checkCondition(this.db.put({
       TableName: Settings.rtfmTimeSeriesTable,
-      Item: { ...heartbeat, id, timestamp },
-      ConditionExpression: 'attribute_not_exists(id)'
+      Item: heartbeat,
+      ConditionExpression: 'attribute_not_exists(DeviceID)'
     }).promise());
   }
 
-  public async getHeartbeat(id: string, timestamp: number): Promise<Heartbeat> {
+  public async getHeartbeat(DeviceID: string, Timestamp: number): Promise<Heartbeat> {
     return (await this.db.get({
       TableName: Settings.rtfmTimeSeriesTable,
-      Key: { id, timestamp }
+      Key: { DeviceID, Timestamp }
     }).promise()).Item! as Heartbeat;
   }
 }

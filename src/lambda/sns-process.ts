@@ -1,7 +1,6 @@
 import { FunctionHandler, Handler, Log, Logger } from '@ananseio/serverless-common';
 import { DB } from '../lib';
-import { HeartbeatDeviceTS, HeartbeatTimeseries } from '../lib/models/heartbeat';
-import { flattenSnsMessage } from '../lib/heartbeat';
+import { Heartbeat, HeartbeatTimeseries } from '../lib/models/heartbeat';
 import { SNSHeartbeatMessageEvent } from '../public';
 
 /**
@@ -18,23 +17,20 @@ export class SNSHeartbeatMessageHandler extends FunctionHandler {
   public async handler(event: SNSHeartbeatMessageEvent) {
     const records = event.Records;
 
-    const allheartbeats = records.reduce((allHbs, snsMessage) => {
+    const heartbeatTS = records.reduce((hbts, snsMessage) => {
       const msgBuf = new Buffer(snsMessage!.Sns!.Message! || '', 'base64');
-      const heartbeats: HeartbeatDeviceTS = JSON.parse(msgBuf.toString());
+      const heartbeats: Heartbeat[] = JSON.parse(msgBuf.toString());
 
-      const hbts = new HeartbeatTimeseries();
-      flattenSnsMessage(heartbeats).forEach(hb => hbts.add(hb));
+      heartbeats.forEach(hb => hbts.add(hb));
 
-      return [...allHbs, ...hbts.heartbeat];
-    }, []);
+      return hbts;
+    }, new HeartbeatTimeseries());
 
-    this.log.debug({allheartbeats});
+    this.log.debug({heartbeatTS});
 
-    await Promise.all(allheartbeats.map((heartbeat) => {
-      const id = `${heartbeat.DeviceID}-${heartbeat.BeatCount}-${heartbeat.BeatTime}`;
-      const timestamp = heartbeat.Timestamp;
-      return this.db.putHeartbeat(id, timestamp, heartbeat)
-        .catch((err) => {
+    await Promise.all(heartbeatTS.heartbeat.map((heartbeat) => {
+      return this.db.putHeartbeat(heartbeat)
+        .catch((err: Error) => {
           this.log.warn({err}, 'dynamodb error occurred');
         });
     }));
