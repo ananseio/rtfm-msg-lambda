@@ -1,15 +1,25 @@
 import { DynamoDB } from 'aws-sdk';
 import { DB } from './DB';
 import { Settings } from '../settings';
+import { Heartbeat } from './models/heartbeat';
 
-const heartbeat = {
-  DeviceID: '34862',
+const nodeId:string = 'unit-test';
+const timestamp:number = Date.now();
+const heartbeats:Heartbeat[] = [{
+  DeviceID: 34862,
   BeatTime: 31348,
   BeatCount: 161,
   ComputedHeartRate: 83,
   PreviousBeat: 30608,
   Timestamp: 1503751734307
-};
+}, {
+  DeviceID: 34862,
+  BeatTime: 31348,
+  BeatCount: 161,
+  ComputedHeartRate: 83,
+  PreviousBeat: 30608,
+  Timestamp: 1503751734355
+}];
 
 describe('database', () => {
   let db: DB;
@@ -18,17 +28,17 @@ describe('database', () => {
   });
 
   it('should create new heartbeat', async () => {
-    expect(await db.putHeartbeat(heartbeat)).toBe(true);
+    expect(await db.putHeartbeat(nodeId, timestamp, heartbeats)).toBe(true);
   });
 
   it('should not overwrite new heartbeat', async () => {
-    expect(await db.putHeartbeat(heartbeat)).toBe(false);
+    expect(await db.putHeartbeat(nodeId, timestamp, heartbeats)).toBe(false);
   });
 
   it('should get existing heartbeat', async () => {
     expect(await db.getHeartbeat(
-      String(heartbeat.DeviceID),
-      heartbeat.Timestamp)
-    ).toEqual(heartbeat);
+      nodeId,
+      timestamp
+    )).toEqual(heartbeats);
   });
 });

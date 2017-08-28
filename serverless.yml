@@ -35,14 +35,14 @@ resources:
       Properties:
         TableName: rtfm-timeseries-data-${self:custom.stage}
         AttributeDefinitions:
-          - AttributeName: DeviceID
+          - AttributeName: nodeId
             AttributeType: S
-          - AttributeName: Timestamp
+          - AttributeName: timestamp
             AttributeType: N
         KeySchema:
-          - AttributeName: DeviceID
+          - AttributeName: nodeId
             KeyType: HASH
-          - AttributeName: Timestamp
+          - AttributeName: timestamp
             KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1

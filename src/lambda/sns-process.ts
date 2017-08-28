@@ -17,23 +17,21 @@ export class SNSHeartbeatMessageHandler extends FunctionHandler {
   public async handler(event: SNSHeartbeatMessageEvent) {
     const records = event.Records;
 
-    const heartbeatTS = records.reduce((hbts, snsMessage) => {
+    const heartbeatPromises = records.map((snsMessage) => {
       const msgBuf = new Buffer(snsMessage!.Sns!.Message! || '', 'base64');
-      const heartbeats: Heartbeat[] = JSON.parse(msgBuf.toString());
+      const msgJson: {
+        nodeId: string,
+        timestamp: number,
+        heartbeats: Heartbeat[]
+      } = JSON.parse(msgBuf.toString());
 
-      heartbeats.forEach(hb => hbts.add(hb));
-
-      return hbts;
-    }, new HeartbeatTimeseries());
-
-    this.log.debug({heartbeatTS});
-
-    await Promise.all(heartbeatTS.heartbeat.map((heartbeat) => {
-      return this.db.putHeartbeat(heartbeat)
+      return this.db.putHeartbeat(msgJson.nodeId, msgJson.timestamp, msgJson.heartbeats)
         .catch((err: Error) => {
           this.log.warn({err}, 'dynamodb error occurred');
         });
-    }));
+    });
+
+    await Promise.all(heartbeatPromises);
 
     return;
   }

@@ -19,17 +19,17 @@ async function initDB() {
   await dbService.createTable({
     TableName: 'rtfm-timeseries-data-test',
     AttributeDefinitions: [{
-      AttributeName: 'DeviceID',
+      AttributeName: 'nodeId',
       AttributeType: 'S'
     }, {
-      AttributeName: 'Timestamp',
+      AttributeName: 'timestamp',
       AttributeType: 'N',
     }],
     KeySchema: [{
-      AttributeName: 'DeviceID',
+      AttributeName: 'nodeId',
       KeyType: 'HASH'
     }, {
-      AttributeName: 'Timestamp',
+      AttributeName: 'timestamp',
       KeyType: 'RANGE'
     }],
     ProvisionedThroughput: {
