@@ -3,7 +3,7 @@ import { DB } from './DB';
 import { Settings } from '../settings';
 
 const heartbeat = {
-  DeviceID: 34862,
+  DeviceID: '34862',
   BeatTime: 31348,
   BeatCount: 161,
   ComputedHeartRate: 83,
@@ -18,25 +18,17 @@ describe('database', () => {
   });
 
   it('should create new heartbeat', async () => {
-    expect(await db.putHeartbeat(
-      String(heartbeat.DeviceID),
-      heartbeat.Timestamp,
-      heartbeat)
-    ).toBe(true);
+    expect(await db.putHeartbeat(heartbeat)).toBe(true);
   });
 
   it('should not overwrite new heartbeat', async () => {
-    expect(await db.putHeartbeat(
-      String(heartbeat.DeviceID),
-      heartbeat.Timestamp,
-      heartbeat)
-    ).toBe(false);
+    expect(await db.putHeartbeat(heartbeat)).toBe(false);
   });
 
   it('should get existing heartbeat', async () => {
     expect(await db.getHeartbeat(
       String(heartbeat.DeviceID),
       heartbeat.Timestamp)
-    ).toEqual({...heartbeat, id: String(heartbeat.DeviceID), timestamp: heartbeat.Timestamp});
+    ).toEqual(heartbeat);
   });
 });
