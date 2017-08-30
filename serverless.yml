@@ -27,6 +27,13 @@ custom:
 functions:
   sns-process:
     handler: dist/lambda.sns-process
+  get-data:
+    handler: dist/lambda.get-data
+    events:
+      - http:
+        method: GET
+        path: /data
+        cors: ${secret:settings:api.cors}
 
 resources:
   Resources:
