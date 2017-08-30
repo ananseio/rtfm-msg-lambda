@@ -31,9 +31,9 @@ functions:
     handler: dist/lambda.get-data
     events:
       - http:
-        method: GET
-        path: /data
-        cors: ${secret:settings:api.cors}
+          method: GET
+          path: /data
+          cors: ${{secret:settings:api.cors}}
 
 resources:
   Resources:
