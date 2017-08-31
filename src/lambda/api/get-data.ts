@@ -13,7 +13,8 @@ export class SNSDataQueryHandler extends FunctionHandler {
   @Handler
   @Log(HTTP)
   @HTTP({
-    respFormat: 'raw'
+    respFormat: 'raw',
+    cors: {},
   })
   public async handler(event: GetData.Request): Promise<HTTP.Response<GetData.Response>> {
     try {
