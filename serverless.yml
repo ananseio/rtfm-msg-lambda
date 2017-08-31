@@ -33,7 +33,7 @@ functions:
       - http:
           method: GET
           path: /data
-          cors: ${{secret:settings:api.cors}}
+          cors: ${secret:settings:api.cors}
 
 resources:
   Resources:
