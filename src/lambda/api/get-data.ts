@@ -14,7 +14,9 @@ export class SNSDataQueryHandler extends FunctionHandler {
   @Log(HTTP)
   @HTTP({
     respFormat: 'raw',
-    cors: {},
+    cors: {
+      origins: [],
+    },
   })
   public async handler(event: GetData.Request): Promise<HTTP.Response<GetData.Response>> {
     try {
@@ -27,6 +29,7 @@ export class SNSDataQueryHandler extends FunctionHandler {
 
       this.log.trace({ heartbeats }, 'query result');
       this.resp.headers = {
+        ...this.resp.headers,
         'Content-Encoding': 'gzip',
         'Content-Type': 'application/json'
       };
