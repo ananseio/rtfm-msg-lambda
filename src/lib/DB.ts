@@ -3,6 +3,8 @@ import { DynamoDB } from 'aws-sdk';
 import { Heartbeat } from './models/heartbeat';
 import { Settings } from '../settings';
 
+
+
 /**
  * database
  */
@@ -21,10 +23,27 @@ export class DB {
     }).promise());
   }
 
-  public async getHeartbeat(nodeId: string, timestamp: number): Promise<Heartbeat[]> {
-    return (await this.db.get({
+  public async getHeartbeat(nodeId: string, since: number, until: number): Promise<Heartbeat[]> {
+    const resp = await this.db.query({
       TableName: Settings.rtfmTimeSeriesTable,
-      Key: { nodeId, timestamp }
-    }).promise()).Item!.heartbeats as Heartbeat[];
+      Select: "ALL_ATTRIBUTES",
+      KeyConditionExpression: '#N = :nodeId AND #T BETWEEN :since AND :until',
+      ExpressionAttributeNames: {
+        '#N': 'nodeId',
+        '#T': 'timestamp'
+      },
+      ExpressionAttributeValues: {
+        ':nodeId': nodeId,
+        ':since': since,
+        ':until': until
+      }
+    }).promise();
+
+    const heartbeats: Heartbeat[] = (resp.Items! as any[]).reduce((
+      accum,
+      entries
+    ): Heartbeat[] => [...accum, ...entries.heartbeats], [])
+
+    return heartbeats;
   }
 }

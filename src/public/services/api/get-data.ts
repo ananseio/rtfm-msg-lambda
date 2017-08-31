@@ -18,6 +18,7 @@ export const enum GetDataError {
 export namespace GetData {
   export interface Request extends HTTP.Event<{}> {
     query: {
+      nodeId: string;
       since?: string;
       until?: string;
     }

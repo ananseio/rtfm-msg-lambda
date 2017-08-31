@@ -21,6 +21,22 @@ const heartbeats:Heartbeat[] = [{
   Timestamp: 1503751734355
 }];
 
+const heartbeats2:Heartbeat[] = [{
+  DeviceID: 34862,
+  BeatTime: 31348,
+  BeatCount: 161,
+  ComputedHeartRate: 83,
+  PreviousBeat: 30608,
+  Timestamp: 1503751735123
+}, {
+  DeviceID: 34862,
+  BeatTime: 31348,
+  BeatCount: 161,
+  ComputedHeartRate: 83,
+  PreviousBeat: 30608,
+  Timestamp: 1503751735551
+}];
+
 describe('database', () => {
   let db: DB;
   beforeAll(() => {
@@ -36,9 +52,12 @@ describe('database', () => {
   });
 
   it('should get existing heartbeat', async () => {
+    await db.putHeartbeat(nodeId, timestamp+1000, heartbeats2);
+
     expect(await db.getHeartbeat(
       nodeId,
-      timestamp
-    )).toEqual(heartbeats);
+      timestamp,
+      timestamp+1000
+    )).toEqual([...heartbeats, ...heartbeats2]);
   });
 });
