@@ -30,8 +30,8 @@ export namespace GetData {
 
   export interface OkResponse {
     error: null;
-    result: Heartbeat[];
+    result?: Heartbeat[];
   }
 
-  export type Response = OkResponse | ErrorResponse;
+  export type Response = OkResponse | ErrorResponse | Buffer;
 }
