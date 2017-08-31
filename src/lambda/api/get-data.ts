@@ -14,9 +14,7 @@ export class SNSDataQueryHandler extends FunctionHandler {
   @Log(HTTP)
   @HTTP({
     respFormat: 'raw',
-    cors: {
-      origins: [],
-    },
+    cors: {},
   })
   public async handler(event: GetData.Request): Promise<HTTP.Response<GetData.Response>> {
     try {
