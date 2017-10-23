@@ -54,3 +54,19 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
+    rtfmTopicRule:
+      Type: AWS::IoT::TopicRule
+      Properties:
+        RuleName: rtfm2dynamo
+        TopicRulePayload:
+          Sql: >-
+            SELECT deviceId, timestamp_nodeId, data FROM 'rtfm_data'
+          RuleDisabled: false
+          Actions:
+            -
+              DynamoDBv2:
+                PutItem:
+                  TableName: ${env:RTFM_TIMESERIES_TABLE}
+                RoleArn:
+                  Fn::GetAtt: [ "${self:service}-${self:provider.region}-lambdaRole", Arn ]
