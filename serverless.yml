@@ -8,7 +8,7 @@ provider:
   timeout: 5
   environment:
     STAGE: ${self:custom.stage}
-    RTFM_TIMESERIES_TABLE: rtfm-timeseries-data-${self:custom.stage}
+    RTFM_TIMESERIES_TABLE: rtfm-device-timeseries-data-${self:custom.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -40,17 +40,33 @@ resources:
     users:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: rtfm-timeseries-data-${self:custom.stage}
+        TableName: rtfm-device-timeseries-data-${self:custom.stage}
         AttributeDefinitions:
-          - AttributeName: nodeId
+          - AttributeName: deviceId
             AttributeType: S
-          - AttributeName: timestamp
-            AttributeType: N
+          - AttributeName: timestamp_nodeId
+            AttributeType: S
         KeySchema:
-          - AttributeName: nodeId
+          - AttributeName: deviceId
             KeyType: HASH
-          - AttributeName: timestamp
+          - AttributeName: timestamp_nodeId
             KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
+    rtfmTopicRule:
+      Type: AWS::IoT::TopicRule
+      Properties:
+        RuleName: rtfm2dynamo
+        TopicRulePayload:
+          Sql: >-
+            SELECT deviceId, timestamp_nodeId, data FROM 'rtfm_data'
+          RuleDisabled: false
+          Actions:
+            -
+              DynamoDBv2:
+                PutItem:
+                  TableName: ${env:RTFM_TIMESERIES_TABLE}
+                RoleArn:
+                  Fn::GetAtt: [ "${self:service}-${self:provider.region}-lambdaRole", Arn ]

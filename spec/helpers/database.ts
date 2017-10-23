@@ -11,31 +11,31 @@ async function initDB() {
     region: 'us-east-1',
     accessKeyId: 'access-key',
     secretAccessKey: 'secret',
-    dynamodb: { endpoint: 'http://localhost:4567' }
+    dynamodb: { endpoint: 'http://localhost:4567' },
   });
 
   const dbService = new DynamoDB();
 
   await dbService.createTable({
-    TableName: 'rtfm-timeseries-data-test',
+    TableName: 'rtfm-device-timeseries-data-test',
     AttributeDefinitions: [{
-      AttributeName: 'nodeId',
-      AttributeType: 'S'
+      AttributeName: 'deviceId',
+      AttributeType: 'S',
     }, {
-      AttributeName: 'timestamp',
-      AttributeType: 'N',
+      AttributeName: 'timestamp_nodeId',
+      AttributeType: 'S',
     }],
     KeySchema: [{
-      AttributeName: 'nodeId',
-      KeyType: 'HASH'
+      AttributeName: 'deviceId',
+      KeyType: 'HASH',
     }, {
-      AttributeName: 'timestamp',
-      KeyType: 'RANGE'
+      AttributeName: 'timestamp_nodeId',
+      KeyType: 'RANGE',
     }],
     ProvisionedThroughput: {
       ReadCapacityUnits: 1,
-      WriteCapacityUnits: 1
-    }
+      WriteCapacityUnits: 1,
+    },
   }).promise();
 }
 

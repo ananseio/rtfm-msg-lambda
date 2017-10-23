@@ -1,8 +1,8 @@
 export class HeartbeatTimeseries {
-  heartbeat: Heartbeat[] = [];
-  entries: { [timeSeriesKey: string]: boolean } = {};
+  public heartbeat: Heartbeat[] = [];
+  public entries: { [timeSeriesKey: string]: boolean } = {};
 
-  add(hb: Heartbeat): void {
+  public add(hb: Heartbeat): void {
     const key = `${hb.DeviceID}-${hb.BeatCount}-${hb.BeatTime}`;
     if ( !this.entries[key] ) {
       this.entries[key] = true;
@@ -10,7 +10,7 @@ export class HeartbeatTimeseries {
     }
   }
 
-  clear(): void {
+  public clear(): void {
     this.heartbeat = [];
     this.entries = {};
   }

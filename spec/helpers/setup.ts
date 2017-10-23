@@ -5,13 +5,13 @@ import { mock } from '@ananseio/lib-secrets/mock';
 
 mock({
   [DefaultCategory]: {
-    key: 'secret'     // Secret variables
+    key: 'secret',     // Secret variables
   },
   settings: {
-    version: 'v1'     // Setting variables
-  }
+    version: 'v1',     // Setting variables
+  },
 });
 
 // Environment variables
 process.env.ORIGIN = 'http://localhost:3000';
-process.env.RTFM_TIMESERIES_TABLE = 'rtfm-timeseries-data-test';
+process.env.RTFM_TIMESERIES_TABLE = 'rtfm-device-timeseries-data-test';

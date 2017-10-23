@@ -8,7 +8,7 @@ export interface SNSHeartbeatMessageEvent {
 export interface SNSMessageRecord {
   EventVersion?: string;
   EventSubscriptionArn?: string;
-  EventSource?: "aws:sns";
+  EventSource?: 'aws:sns';
   Sns?: SNSMessage;
 }
 

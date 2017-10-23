@@ -1,40 +1,43 @@
 import { DynamoDB } from 'aws-sdk';
+
 import { DB } from './DB';
-import { Settings } from '../settings';
 import { Heartbeat } from './models/heartbeat';
 
-const nodeId:string = 'unit-test';
-const timestamp:number = Date.now();
-const heartbeats:Heartbeat[] = [{
-  DeviceID: 34862,
+import { Settings } from '../settings';
+
+const deviceId: string = '34863';
+const nodeId: string = 'unit-test';
+const timestamp: number = Date.now();
+const heartbeats: Heartbeat[] = [{
+  DeviceID: 34863,
   BeatTime: 31348,
   BeatCount: 161,
   ComputedHeartRate: 83,
   PreviousBeat: 30608,
-  Timestamp: 1503751734307
+  Timestamp: 1503751734307,
 }, {
-  DeviceID: 34862,
+  DeviceID: 34863,
   BeatTime: 31348,
   BeatCount: 161,
   ComputedHeartRate: 83,
   PreviousBeat: 30608,
-  Timestamp: 1503751734355
+  Timestamp: 1503751734355,
 }];
 
-const heartbeats2:Heartbeat[] = [{
-  DeviceID: 34862,
+const heartbeats2: Heartbeat[] = [{
+  DeviceID: 34863,
   BeatTime: 31348,
   BeatCount: 161,
   ComputedHeartRate: 83,
   PreviousBeat: 30608,
-  Timestamp: 1503751735123
+  Timestamp: 1503751735123,
 }, {
-  DeviceID: 34862,
+  DeviceID: 34863,
   BeatTime: 31348,
   BeatCount: 161,
   ComputedHeartRate: 83,
   PreviousBeat: 30608,
-  Timestamp: 1503751735551
+  Timestamp: 1503751735551,
 }];
 
 describe('database', () => {
@@ -44,20 +47,20 @@ describe('database', () => {
   });
 
   it('should create new heartbeat', async () => {
-    expect(await db.putHeartbeat(nodeId, timestamp, heartbeats)).toBe(true);
+    expect(await db.putHeartbeat(deviceId, timestamp, nodeId, heartbeats)).toBe(true);
   });
 
   it('should not overwrite new heartbeat', async () => {
-    expect(await db.putHeartbeat(nodeId, timestamp, heartbeats)).toBe(false);
+    expect(await db.putHeartbeat(deviceId, timestamp, nodeId, heartbeats)).toBe(false);
   });
 
   it('should get existing heartbeat', async () => {
-    await db.putHeartbeat(nodeId, timestamp+1000, heartbeats2);
-
-    expect(await db.getHeartbeat(
-      nodeId,
-      timestamp,
-      timestamp+1000
-    )).toEqual([...heartbeats, ...heartbeats2]);
+    await db.putHeartbeat(deviceId, timestamp + 1000, nodeId, heartbeats2);
+    const resultHeartbeats = await db.getHeartbeat(
+      deviceId,
+      `${timestamp}`,
+      `${timestamp + 1001}`,
+    );
+    expect(resultHeartbeats).toEqual([...heartbeats, ...heartbeats2]);
   });
 });

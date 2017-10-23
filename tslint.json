@@ -26,7 +26,14 @@
     "typedef": false,
     "mocha-no-side-effect-code": false,
     "no-increment-decrement": false,
-    "newline-before-return": false
+    "newline-before-return": false,
+    "trailing-comma": [
+      true,
+      {
+        "multiline": "always",
+        "singleline": "never"
+      }
+    ]
   },
   "rulesDirectory": []
 }
