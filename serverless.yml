@@ -69,4 +69,5 @@ resources:
               DynamoDBv2:
                 PutItem:
                   TableName: ${self:provider.environment.RTFM_TIMESERIES_TABLE}
-                RoleArn: arn:aws:iam::${AWS::AccountId}:role/${self:service}-${self:custom.stage}-${self:provider.region}-lambdaRole
+                RoleArn:
+                  Fn::Sub: "arn:aws:iam::\\$\\{AWS::AccountId\\}:role/${self:service}-${self:custom.stage}-${self:provider.region}-lambdaRole"
