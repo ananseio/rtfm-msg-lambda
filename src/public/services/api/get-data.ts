@@ -1,6 +1,6 @@
 import { FuncDef, HTTP } from '@ananseio/serverless-common';
-import { Service } from '../../types';
 import { Heartbeat } from '../../../lib/models/heartbeat';
+import { Service } from '../../types';
 
 /**
  * Search resume by conditions
@@ -12,16 +12,16 @@ export const GetData = {
 
 export const enum GetDataError {
   InvalidRequest = 'invalid request',
-  InternalFailure = 'internal failure'
+  InternalFailure = 'internal failure',
 }
 
 export namespace GetData {
   export interface Request extends HTTP.Event<{}> {
     query: {
-      nodeId: string;
+      deviceId: string;
       since?: string;
       until?: string;
-    }
+    };
   }
 
   export interface ErrorResponse {
