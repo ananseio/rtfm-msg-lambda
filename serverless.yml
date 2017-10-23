@@ -69,3 +69,5 @@ resources:
               DynamoDBv2:
                 PutItem:
                   TableName: ${self:provider.environment.RTFM_TIMESERIES_TABLE}
+                RoleArn:
+                  Ref: ${self:service}-${self:custom.stage}-${self:provider.region}-lambdaRole
