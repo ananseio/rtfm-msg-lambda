@@ -47,7 +47,7 @@ export class DB {
     return (resp.Items! as any[]).reduce(
       (accum, entries): Heartbeat[] => ([
         ...accum,
-        ...entries.heartbeats,
+        ...entries.data,
       ]),
       [],
     );

@@ -4,26 +4,26 @@ provider:
   name: aws
   runtime: nodejs6.10
   region: us-west-2
+  variableSyntax: "\\${{([ ~:a-zA-Z0-9._\\'\",\\-\\/\\(\\)]+?)}}"
   memorySize: 128
   timeout: 5
   environment:
-    STAGE: ${self:custom.stage}
-    RTFM_TIMESERIES_TABLE: rtfm-device-timeseries-data-${self:custom.stage}
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - lambda:InvokeFunction
-        - dynamodb:*
-        - iot:*
-      Resource: "*"
+    STAGE: ${{self:custom.stage}}
+    RTFM_TIMESERIES_TABLE: rtfm-device-timeseries-data-${{self:custom.stage}}
+  role: rtfmRole
 
 plugins:
   - "@ananseio/lambda-secrets"
 
 custom:
-  stage: ${opt:stage, self:provider.stage}
+  stage: ${{opt:stage, self:provider.stage}}
   secrets:
-    config: ${s3:rtfm-secrets/secrets.json}
+    config: ${{s3:rtfm-secrets/secrets.json}}
+  authorizer: &authorizer
+    name: rtfm-authorizer
+    arn: ${{secret:settings:arn.userPool}}
+    identitySource: method.request.header.X-aws-authorizer
+
 
 functions:
   sns-process:
@@ -34,14 +34,24 @@ functions:
       - http:
           method: GET
           path: /data
-          cors: ${secret:settings:api.cors}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+  request-attach-policy:
+    handler: dist/lambda.request-attach-policy
+    events:
+      - http:
+          method: GET
+          path: /{identityId}/attach_policy
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+
 
 resources:
   Resources:
     users:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: rtfm-device-timeseries-data-${self:custom.stage}
+        TableName: rtfm-device-timeseries-data-${{self:custom.stage}}
         AttributeDefinitions:
           - AttributeName: deviceId
             AttributeType: S
@@ -68,6 +78,51 @@ resources:
             -
               DynamoDBv2:
                 PutItem:
-                  TableName: ${self:provider.environment.RTFM_TIMESERIES_TABLE}
+                  TableName: ${{self:provider.environment.RTFM_TIMESERIES_TABLE}}
                 RoleArn:
-                  Fn::Sub: "arn:aws:iam::\\$\\{AWS::AccountId\\}:role/${self:service}-${self:custom.stage}-${self:provider.region}-lambdaRole"
+                  Fn::GetAtt: [rtfmRole, Arn]
+
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'${{secret:settings:api.origin}}'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-aws-authorizer'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST,PUT'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+    GatewayResponseDefault5XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'${{secret:settings:api.origin}}'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-aws-authorizer'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST,PUT'"
+        ResponseType: DEFAULT_5XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+    rtfmRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: rtfm-role-${{self:custom.stage}}
+        Policies:
+          - PolicyName: rtfm-fullstack-policy-${{self:custom.stage}}
+            PolicyDocument:
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - lambda:InvokeFunction
+                    - dynamodb:*
+                    - iot:*
+                    - cognito-identity:*
+                  Resource: "*"
+        AssumeRolePolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+                  - iot.amazonaws.com
+              Action:
+                - sts:AssumeRole

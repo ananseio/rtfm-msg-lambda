@@ -14,12 +14,11 @@ export class SNSDataQueryHandler extends FunctionHandler {
 
   @Handler
   @Log(HTTP)
-  @HTTP({
-    respFormat: 'raw',
-    cors: {},
-  })
+  @HTTP({ respFormat: 'raw', cors: { credentials: true } })
   public async handler(event: GetData.Request): Promise<HTTP.Response<GetData.Response>> {
     try {
+      this.log.debug(this.rawEvent);
+
       const deviceId: string = event.query.deviceId || '';
       const since: string = event.query.since || '0';
       const until: string = event.query.until || `${Date.now()}`;
@@ -31,7 +30,7 @@ export class SNSDataQueryHandler extends FunctionHandler {
       this.resp.headers = {
         ...this.resp.headers,
         'Content-Encoding': 'gzip',
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/gzip',
       };
 
       return this.resp.ok(zlib.gzipSync(JSON.stringify({
