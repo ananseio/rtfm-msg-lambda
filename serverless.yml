@@ -10,7 +10,17 @@ provider:
   environment:
     STAGE: ${{self:custom.stage}}
     RTFM_TIMESERIES_TABLE: rtfm-device-timeseries-data-${{self:custom.stage}}
+<<<<<<< HEAD
   role: rtfmRole
+=======
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+        - dynamodb:*
+        - iot:*
+      Resource: "*"
+>>>>>>> 389f5f4d279d74f1597127a7fc69b7cb4c2d735f
 
 plugins:
   - "@ananseio/lambda-secrets"
@@ -19,11 +29,14 @@ custom:
   stage: ${{opt:stage, self:provider.stage}}
   secrets:
     config: ${{s3:rtfm-secrets/secrets.json}}
+<<<<<<< HEAD
   authorizer: &authorizer
     name: rtfm-authorizer
     arn: ${{secret:settings:arn.userPool}}
     identitySource: method.request.header.X-aws-authorizer
 
+=======
+>>>>>>> 389f5f4d279d74f1597127a7fc69b7cb4c2d735f
 
 functions:
   sns-process:
@@ -35,6 +48,7 @@ functions:
           method: GET
           path: /data
           cors: ${{secret:settings:api.cors}}
+<<<<<<< HEAD
           authorizer: *authorizer
   request-attach-policy:
     handler: dist/lambda.request-attach-policy
@@ -45,6 +59,8 @@ functions:
           cors: ${{secret:settings:api.cors}}
           authorizer: *authorizer
 
+=======
+>>>>>>> 389f5f4d279d74f1597127a7fc69b7cb4c2d735f
 
 resources:
   Resources:
@@ -80,6 +96,7 @@ resources:
                 PutItem:
                   TableName: ${{self:provider.environment.RTFM_TIMESERIES_TABLE}}
                 RoleArn:
+<<<<<<< HEAD
                   Fn::GetAtt: [rtfmRole, Arn]
 
     GatewayResponseDefault4XX:
@@ -126,3 +143,6 @@ resources:
                   - iot.amazonaws.com
               Action:
                 - sts:AssumeRole
+=======
+                  Fn::Sub: "arn:aws:iam::${AWS::AccountId}:role/${{self:service}}-${{self:custom.stage}}-${{self:provider.region}}-lambdaRole"
+>>>>>>> 389f5f4d279d74f1597127a7fc69b7cb4c2d735f
