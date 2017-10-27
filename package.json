@@ -9,7 +9,9 @@
     "@types/aws-lambda": "^0.0.16",
     "@types/bunyan": "^1.8.2",
     "@types/jasmine": "^2.5.53",
+    "@types/joi": "^10.4.4",
     "@types/node": "^8.0.23",
+    "@types/uuid": "^3.4.3",
     "aws-sdk": "^2.104.0",
     "jasmine": "^2.7.0",
     "json": "^9.0.6",
@@ -24,7 +26,9 @@
   },
   "dependencies": {
     "@ananseio/lib-secrets": "^0.8.1",
-    "@ananseio/serverless-common": "^0.11.1"
+    "@ananseio/serverless-common": "^0.11.1",
+    "joi": "12.0.0",
+    "uuid": "^3.1.0"
   },
   "private": true,
   "scripts": {

@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "../dist",
     "rootDir": ".",
-    "lib": ["ES2015"]
+    "lib": ["ES2015"],
+    "experimentalDecorators": true
   },
   "include": [
     "**/*.ts"
