@@ -20,8 +20,8 @@ export class SNSDataQueryHandler extends FunctionHandler {
       this.log.debug(this.rawEvent);
 
       const deviceId: string = event.query.deviceId || '';
-      const since: string = event.query.since || '0';
-      const until: string = event.query.until || `${Date.now()}`;
+      const since: number = parseInt(event.query.since || '0');
+      const until: number = parseInt(event.query.until || `${Date.now()}`);
 
       this.log.info('start querying heartbeat');
       const heartbeats: Heartbeat[] = await this.db.getHeartbeat(deviceId, since, until);

@@ -5,15 +5,13 @@ export class DeviceDB {
   private db = new DynamoDB.DocumentClient();
   private tableName = `rtfm-devices-${process.env.STAGE}`;
 
-  public async createDevice (deviceUuid: string, deviceId: string, serial:string, owner: string, name: string, description?: string): Promise<Device> {
+  public async createDevice (deviceUuid: string, deviceId: string, serial:string, owner: string, name: string, description?: string): Promise<void> {
     const response = await this.db.put({
       TableName: this.tableName,
       Item: { deviceUuid, deviceId, serial, owner, name, description },
-      Expected: {
-        deviceUuid: { Exists: false },
-      },
+      ConditionExpression: `attribute_not_exists(deviceUuid)`,
     }).promise();
-    return response.Attributes as Device;
+    return;
   }
 
   public async getDevice (deviceUuid: string): Promise<Device | undefined> {
@@ -27,7 +25,9 @@ export class DeviceDB {
   public async listDevice (owner: string): Promise<Device[]> {
     const response = await this.db.query({
       TableName: this.tableName,
-      KeyConditionExpression: `owner = :owner`,
+      IndexName: 'owner-index',
+      KeyConditionExpression: `#owner = :owner`,
+      ExpressionAttributeNames: { '#owner': 'owner'},
       ExpressionAttributeValues: { ':owner': owner },
     }).promise()
     return (response.Items as Device[]) || [];
@@ -44,9 +44,7 @@ export class DeviceDB {
     const response = await this.db.update({
       TableName: this.tableName,
       Key: { deviceUuid },
-      Expected: {
-        deviceUuid: { Exists: true },
-      },
+      ConditionExpression: `attribute_exists(deviceUuid)`,
       UpdateExpression: `SET ${exprs.join(', ')}`,
       ExpressionAttributeNames: names,
       ExpressionAttributeValues: values,

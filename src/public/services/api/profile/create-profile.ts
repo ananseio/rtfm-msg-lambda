@@ -29,13 +29,13 @@ export namespace CreateProfile {
     body: {
       name?: string;
       description?: string;
-      groups?: string;
+      groups?: string[];
     };
   }
 
   export interface NormalResponse {
     status: string;
-    profile: Profile;
+    profileUuid: string;
   }
 
   export interface ErrorResponse {

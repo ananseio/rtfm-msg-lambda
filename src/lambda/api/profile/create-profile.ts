@@ -24,9 +24,9 @@ export class CreateProfileHandler extends FunctionHandler {
       const profileUuid = uuid();
       const owner = this.rawEvent.requestContext.authorizer.claims['cognito:groups'];
       const name = event.body.name || 'new profile';
-      const profile = await this.db.createProfile(profileUuid, name, owner, event.body.description, event.body.groups);
+      await this.db.createProfile(profileUuid, owner, name, event.body.description, event.body.groups);
 
-      return this.resp.ok({ status: 'success', profile });
+      return this.resp.ok({ status: 'success', profileUuid });
     } catch (err) {
       this.log.error(err);
       return this.resp.internalError({ error: CreateProfileError.generalError });

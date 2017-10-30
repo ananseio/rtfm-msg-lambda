@@ -5,15 +5,13 @@ export class ProfileDB {
   private db = new DynamoDB.DocumentClient();
   private tableName = `rtfm-profiles-${process.env.STAGE}`;
 
-  public async createProfile (profileUuid: string, owner: string, name: string, description?: string, group?: string): Promise<Profile> {
+  public async createProfile (profileUuid: string, owner: string, name: string, description?: string, groups?: string[]): Promise<void> {
     const response = await this.db.put({
       TableName: this.tableName,
-      Item: { profileUuid, owner, name, description, group },
-      Expected: {
-        profileUuid: { Exists: false },
-      },
+      Item: { profileUuid, owner, name, description, groups },
+      ConditionExpression: `attribute_not_exists(profileUuid)`,
     }).promise();
-    return response.Attributes as Profile;
+    return;
   }
 
   public async getProfile (profileUuid: string): Promise<Profile | undefined> {
@@ -27,7 +25,9 @@ export class ProfileDB {
   public async listProfile (owner: string): Promise<Profile[]> {
     const response = await this.db.query({
       TableName: this.tableName,
-      KeyConditionExpression: `owner = :owner`,
+      IndexName: 'owner-index',
+      KeyConditionExpression: `#owner = :owner`,
+      ExpressionAttributeNames: { '#owner': 'owner'},
       ExpressionAttributeValues: { ':owner': owner },
     }).promise()
     return (response.Items as Profile[]) || [];
@@ -44,9 +44,7 @@ export class ProfileDB {
     const response = await this.db.update({
       TableName: this.tableName,
       Key: { profileUuid },
-      Expected: {
-        profileUuid: { Exists: true },
-      },
+      ConditionExpression: `attribute_exists(profileUuid)`,
       UpdateExpression: `SET ${exprs.join(', ')}`,
       ExpressionAttributeNames: names,
       ExpressionAttributeValues: values,

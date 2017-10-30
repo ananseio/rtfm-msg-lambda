@@ -2,7 +2,7 @@ import { FunctionHandler, Handler, HTTP, Log, Logger } from '@ananseio/serverles
 import { ProfileDB } from '../../../lib';
 import { ListProfile, ListProfileError, Profile } from '../../../public';
 
-export class CreateProfileHandler extends FunctionHandler {
+export class ListProfileHandler extends FunctionHandler {
   public static handler: Function;
   public log: Logger;
 

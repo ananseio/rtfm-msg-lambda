@@ -11,6 +11,9 @@ provider:
     STAGE: ${{self:custom.stage}}
     RTFM_TIMESERIES_TABLE: rtfm-device-timeseries-data-${{self:custom.stage}}
   role: rtfmRole
+  stackTags:
+    OWNER: ananse
+    REPO: ${{self:service}}
 
 plugins:
   - "@ananseio/lambda-secrets"
@@ -44,6 +47,153 @@ functions:
           cors: ${{secret:settings:api.cors}}
           authorizer: *authorizer
 
+  create-device:
+    handler: dist/lambda.createDevice
+    events:
+      - http:
+          method: POST
+          path: /device
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+  delete-device:
+    handler: dist/lambda.deleteDevice
+    events:
+      - http:
+          method: DELETE
+          path: /device/{deviceUuid}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+  get-device:
+    handler: dist/lambda.getDevice
+    events:
+      - http:
+          method: GET
+          path: /device/{deviceUuid}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+  list-device:
+    handler: dist/lambda.listDevice
+    events:
+      - http:
+          method: GET
+          path: /device
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+  update-device:
+    handler: dist/lambda.updateDevice
+    events:
+      - http:
+          method: POST
+          path: /device/{deviceUuid}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+      - http:
+          method: PUT
+          path: /device/{deviceUuid}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+
+  create-profile:
+    handler: dist/lambda.createProfile
+    events:
+      - http:
+          method: POST
+          path: /profile
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+  delete-profile:
+    handler: dist/lambda.deleteProfile
+    events:
+      - http:
+          method: DELETE
+          path: /profile/{profileUuid}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+  get-profile:
+    handler: dist/lambda.getProfile
+    events:
+      - http:
+          method: GET
+          path: /profile/{profileUuid}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+  list-profile:
+    handler: dist/lambda.listProfile
+    events:
+      - http:
+          method: GET
+          path: /profile
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+  update-profile:
+    handler: dist/lambda.updateProfile
+    events:
+      - http:
+          method: POST
+          path: /profile/{profileUuid}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+      - http:
+          method: PUT
+          path: /profile/{profileUuid}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+
+  create-record:
+    handler: dist/lambda.createRecord
+    events:
+      - http:
+          method: POST
+          path: /record
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+  delete-record:
+    handler: dist/lambda.deleteRecord
+    events:
+      - http:
+          method: DELETE
+          path: /record/{recordUuid}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+  get-record:
+    handler: dist/lambda.getRecord
+    events:
+      - http:
+          method: GET
+          path: /record/{recordUuid}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+  list-record:
+    handler: dist/lambda.listRecord
+    events:
+      - http:
+          method: GET
+          path: /record
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+  update-record:
+    handler: dist/lambda.updateRecord
+    events:
+      - http:
+          method: POST
+          path: /record/{recordUuid}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+      - http:
+          method: PUT
+          path: /record/{recordUuid}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+      - http:
+          method: POST
+          path: /record/{recordUuid}/{action}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
+      - http:
+          method: PUT
+          path: /record/{recordUuid}/{action}
+          cors: ${{secret:settings:api.cors}}
+          authorizer: *authorizer
 
 resources:
   Resources:
@@ -64,6 +214,7 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
     devices:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -71,12 +222,24 @@ resources:
         AttributeDefinitions:
           - AttributeName: deviceUuid
             AttributeType: S
+          - AttributeName: owner
+            AttributeType: S
         KeySchema:
-          - AttributeName: deviceId
+          - AttributeName: deviceUuid
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: owner-index
+            KeySchema:
+              - AttributeName: owner
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
     profiles:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -84,25 +247,24 @@ resources:
         AttributeDefinitions:
           - AttributeName: profileUuid
             AttributeType: S
+          - AttributeName: owner
+            AttributeType: S
         KeySchema:
           - AttributeName: profileUuid
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-    sessions:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: rtfm-sessions-${{self:custom.stage}}
-        AttributeDefinitions:
-          - AttributeName: sessionUuid
-            AttributeType: S
-        KeySchema:
-          - AttributeName: sessionUuid
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: owner-index
+            KeySchema:
+              - AttributeName: owner
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
     records:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -110,38 +272,67 @@ resources:
         AttributeDefinitions:
           - AttributeName: recordUuid
             AttributeType: S
+          - AttributeName: owner
+            AttributeType: S
+          - AttributeName: profileUuid
+            AttributeType: S
         KeySchema:
           - AttributeName: recordUuid
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-    customers:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: rtfm-customers-${{self:custom.stage}}
-        AttributeDefinitions:
-          - AttributeName: customerUuid
-            AttributeType: S
-        KeySchema:
-          - AttributeName: customerUuid
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-    nodes:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: rtfm-nodes-${{self:custom.stage}}
-        AttributeDefinitions:
-          - AttributeName: nodeUuid
-            AttributeType: S
-        KeySchema:
-          - AttributeName: nodeUuid
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: owner-index
+            KeySchema:
+              - AttributeName: owner
+                KeyType: HASH
+              - AttributeName: profileUuid
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+    #sessions:
+    #  Type: AWS::DynamoDB::Table
+    #  Properties:
+    #    TableName: rtfm-sessions-${{self:custom.stage}}
+    #    AttributeDefinitions:
+    #      - AttributeName: sessionUuid
+    #        AttributeType: S
+    #    KeySchema:
+    #      - AttributeName: sessionUuid
+    #        KeyType: HASH
+    #    ProvisionedThroughput:
+    #      ReadCapacityUnits: 1
+    #      WriteCapacityUnits: 1
+    #customers:
+    #  Type: AWS::DynamoDB::Table
+    #  Properties:
+    #    TableName: rtfm-customers-${{self:custom.stage}}
+    #    AttributeDefinitions:
+    #      - AttributeName: customerUuid
+    #        AttributeType: S
+    #    KeySchema:
+    #      - AttributeName: customerUuid
+    #        KeyType: HASH
+    #    ProvisionedThroughput:
+    #      ReadCapacityUnits: 1
+    #      WriteCapacityUnits: 1
+    #nodes:
+    #  Type: AWS::DynamoDB::Table
+    #  Properties:
+    #    TableName: rtfm-nodes-${{self:custom.stage}}
+    #    AttributeDefinitions:
+    #      - AttributeName: nodeUuid
+    #        AttributeType: S
+    #    KeySchema:
+    #      - AttributeName: nodeUuid
+    #        KeyType: HASH
+    #    ProvisionedThroughput:
+    #      ReadCapacityUnits: 1
+    #      WriteCapacityUnits: 1
 
 
     rtfmTopicRule:
@@ -153,8 +344,7 @@ resources:
             SELECT deviceId, timestamp_nodeId, data FROM 'rtfm_data'
           RuleDisabled: false
           Actions:
-            -
-              DynamoDBv2:
+            - DynamoDBv2:
                 PutItem:
                   TableName: ${{self:provider.environment.RTFM_TIMESERIES_TABLE}}
                 RoleArn:
@@ -191,6 +381,10 @@ resources:
                 - Effect: Allow
                   Action:
                     - lambda:InvokeFunction
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                    - logs:DescribeLogStreams
                     - dynamodb:*
                     - iot:*
                     - cognito-identity:*

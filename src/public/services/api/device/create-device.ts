@@ -32,7 +32,7 @@ export namespace CreateDevice {
 
   export interface NormalResponse {
     status: string;
-    device: Device;
+    deviceUuid: string;
   }
 
   export interface ErrorResponse {

@@ -23,7 +23,7 @@ export class DB {
     }).promise());
   }
 
-  public async getHeartbeat(deviceId: string, since: string, until: string): Promise<Heartbeat[]> {
+  public async getHeartbeat(deviceId: string, since: number, until: number): Promise<Heartbeat[]> {
     const resp = await this.db.query({
       TableName: Settings.rtfmTimeSeriesTable,
       Select: 'ALL_ATTRIBUTES',
@@ -34,8 +34,8 @@ export class DB {
       },
       ExpressionAttributeValues: {
         ':deviceId': deviceId,
-        ':since': since,
-        ':until': until,
+        ':since': since.toString(),
+        ':until': until.toString(),
       },
     }).promise();
 

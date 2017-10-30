@@ -40,7 +40,7 @@ export namespace CreateRecord {
 
   export interface NormalResponse {
     status: string;
-    record: Record;
+    recordUuid: string;
   }
 
   export interface ErrorResponse {

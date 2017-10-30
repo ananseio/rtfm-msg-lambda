@@ -77,6 +77,6 @@ export type Record = {
 
 export type DataPoint = {
   timestamp: number;
-  heartBeat: number;
+  heartbeat: number;
   // adding extended properties, e.g. power, speed, energy, etc.
 }

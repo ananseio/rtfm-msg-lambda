@@ -15,6 +15,7 @@ export enum UpdateRecordError {
   generalError = 'fail to update record',
   noRecord = 'specific recordUuid not exist: ',
   notOwner = 'unauthorized to access record: ',
+  repeatStop = 'the record had been stopped before',
 }
 
 export const UpdateRecordValidator = Joi.object({

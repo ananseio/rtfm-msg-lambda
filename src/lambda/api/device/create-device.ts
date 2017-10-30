@@ -24,9 +24,9 @@ export class CreateDeviceHandler extends FunctionHandler {
       const deviceUuid = uuid();
       const owner = this.rawEvent.requestContext.authorizer.claims['cognito:groups'];
       const name = event.body.name || event.body.deviceId;
-      const device = await this.db.createDevice(deviceUuid, event.body.deviceId, event.body.serial, owner, name, event.body.description);
+      await this.db.createDevice(deviceUuid, event.body.deviceId, event.body.serial, owner, name, event.body.description);
 
-      return this.resp.ok({ status: 'success', device });
+      return this.resp.ok({ status: 'success', deviceUuid });
     } catch (err) {
       this.log.error(err);
       return this.resp.internalError({ error: CreateDeviceError.generalError });

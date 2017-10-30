@@ -34,10 +34,10 @@ export class CreateRecordHandler extends FunctionHandler {
       }
 
       const recordUuid = uuid();
-      const name = event.body.name || ``;
-      const record = await this.db.createRecord(recordUuid, profile.profileUuid, device.deviceUuid, owner, name, Date.now(), undefined, event.body.description);
+      const name = event.body.name || `${profile.name} - ${new Date().toUTCString()}`;
+      await this.db.createRecord(recordUuid, profile.profileUuid, device.deviceUuid, owner, name, Date.now(), undefined, event.body.description);
 
-      return this.resp.ok({ status: 'success', record });
+      return this.resp.ok({ status: 'success', recordUuid });
     } catch (err) {
       this.log.error(err);
       return this.resp.internalError({ error: CreateRecordError.generalError });
