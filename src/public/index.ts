@@ -17,13 +17,7 @@ export * from './services/api/profile/list-profile';
 export * from './services/api/profile/get-profile';
 export * from './services/api/profile/update-profile';
 export * from './services/api/profile/delete-profile';
-/**
-export * from './services/api/session/create-session';
-export * from './services/api/session/list-session';
-export * from './services/api/session/get-session';
-export * from './services/api/session/update-session';
-export * from './services/api/session/delete-session';
-*/
+
 export * from './services/api/record/create-record';
 export * from './services/api/record/get-record';
 export * from './services/api/record/list-record';

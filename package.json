@@ -12,6 +12,7 @@
     "@types/joi": "^10.4.4",
     "@types/node": "^8.0.23",
     "@types/uuid": "^3.4.3",
+    "apidoc": "^0.17.6",
     "aws-sdk": "^2.104.0",
     "jasmine": "^2.7.0",
     "json": "^9.0.6",
@@ -35,7 +36,12 @@
     "build": "rm -rf dist && tsc -p src",
     "test": "nyc jasmine",
     "deploy": "sh tools/serverless.sh deploy",
-    "do-publish": "ts-node tools/publish.ts"
+    "do-publish": "ts-node tools/publish.ts",
+    "doc": "apidoc -f .ts -i src/public/services/ -o docs/"
+  },
+  "apidoc": {
+    "title": "API - Real-time fitness monitoring",
+    "url": "https://rtfm-api.dev.ananse.io/rtfm"
   },
   "nyc": {
     "reporter": [

@@ -36,32 +36,7 @@ export type Device = {
 }
 
 /**
- * Node is a hardware for communicate with rtfm. It must have a certificate to authenticate itself. e.g. raspberryPi.
- */
-export type Node = {
-  nodeUuid: string;
-  owner: string;
-  name: string;
-  description: string;
-  certificateId: string;
-}
-
-/**
- * Session is a group of records grouping together for comparison. For example, in a 100-meter running training,
- */
-/* [SUSPEND] feature not support yet.
-export type Session = {
-  sessionUuid: string;
-  owner: string;
-  name: string;
-  description: string;
-  timestamp: string;
-  records: Record[];
-}
-*/
-
-/**
- * Record is
+ * Record is a period of time of a profile with candidate
  */
 export type Record = {
   recordUuid: string;
