@@ -62,3 +62,6 @@ dist
 
 # serverless packages
 .serverless
+
+# api documents
+#/docs

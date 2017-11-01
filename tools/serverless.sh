@@ -7,7 +7,7 @@ json out -e 'this.out = JSON.stringify({
   dependencies: this.dependencies
 })' < package.json | json > .tmp/package.json
 
-find dist -type f ! -name '*.d.ts' -exec cp {} --parents .tmp \;
+find dist -type f ! -name '*.d.ts' -exec rsync {} -R .tmp \;
 cp serverless.yml .tmp
 cp yarn.lock .tmp
 

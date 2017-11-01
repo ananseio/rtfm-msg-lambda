@@ -12,4 +12,5 @@ export class Settings {
   public static version: Promise<string>;
 
   public static rtfmTimeSeriesTable = process.env.RTFM_TIMESERIES_TABLE!;
+  public static rtfmCognitoUserPool = process.env.RTFM_COGNITO_USER_POOL_ID!;
 }

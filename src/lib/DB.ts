@@ -10,12 +10,7 @@ import { Settings } from '../settings';
 export class DB {
   private db = new DynamoDB.DocumentClient();
 
-  public async putHeartbeat(
-    deviceId: string,
-    timestamp: number,
-    nodeId: string,
-    heartbeats: Heartbeat[],
-  ): Promise<boolean> {
+  public async putHeartbeat(deviceId: string, timestamp: number, nodeId: string, heartbeats: Heartbeat[]): Promise<boolean> {
     return !!await utils.checkCondition(this.db.put({
       TableName: Settings.rtfmTimeSeriesTable,
       Item: {
@@ -28,7 +23,7 @@ export class DB {
     }).promise());
   }
 
-  public async getHeartbeat(deviceId: string, since: string, until: string): Promise<Heartbeat[]> {
+  public async getHeartbeat(deviceId: string, since: number, until: number): Promise<Heartbeat[]> {
     const resp = await this.db.query({
       TableName: Settings.rtfmTimeSeriesTable,
       Select: 'ALL_ATTRIBUTES',
@@ -39,17 +34,11 @@ export class DB {
       },
       ExpressionAttributeValues: {
         ':deviceId': deviceId,
-        ':since': since,
-        ':until': until,
+        ':since': since.toString(),
+        ':until': until.toString(),
       },
     }).promise();
 
-    return (resp.Items! as any[]).reduce(
-      (accum, entries): Heartbeat[] => ([
-        ...accum,
-        ...entries.heartbeats,
-      ]),
-      [],
-    );
+    return (resp.Items! as any[]).reduce((accum, entries): Heartbeat[] => ([...accum, ...entries.data]), []);
   }
 }
