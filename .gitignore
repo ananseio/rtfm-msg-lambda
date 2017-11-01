@@ -64,4 +64,4 @@ dist
 .serverless
 
 # api documents
-/docs
+#/docs
