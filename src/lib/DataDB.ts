@@ -10,14 +10,14 @@ import { Settings } from '../settings';
 export class DataDB {
   private db = new DynamoDB.DocumentClient();
 
-  public async putHeartbeat(deviceId: string, timestamp: number, nodeId: string, heartbeats: Heartbeat[]): Promise<boolean> {
+  public async putHeartbeat(deviceId: string, timestamp: number, nodeId: string, data: Heartbeat[]): Promise<boolean> {
     return !!await utils.checkCondition(this.db.put({
       TableName: Settings.rtfmTimeSeriesTable,
       Item: {
         deviceId,
         timestamp_nodeId: `${timestamp}.${nodeId}`,
         nodeId,
-        heartbeats,
+        data,
       },
       ConditionExpression: 'attribute_not_exists(deviceId)',
     }).promise());
@@ -39,6 +39,11 @@ export class DataDB {
       },
     }).promise();
 
-    return (resp.Items! as any[]).reduce((accum, entries): Heartbeat[] => ([...accum, ...entries.data]), []);
+    return (resp.Items! as any[]).reduce(
+      (accum, entries): Heartbeat[] => (
+        [...accum, ...(entries.data || [])]
+      ),
+      [],
+    );
   }
 }

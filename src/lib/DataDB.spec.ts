@@ -7,7 +7,7 @@ import { Settings } from '../settings';
 
 const deviceId: string = '34863';
 const nodeId: string = 'unit-test';
-const timestamp: number = Date.now();
+const timestamp: number = 1503751734307;
 const heartbeats: Heartbeat[] = [{
   DeviceID: 34863,
   BeatTime: 31348,
@@ -55,11 +55,11 @@ describe('database', () => {
   });
 
   it('should get existing heartbeat', async () => {
-    await db.putHeartbeat(deviceId, timestamp + 1000, nodeId, heartbeats2);
+    await db.putHeartbeat(deviceId, timestamp + 2000, nodeId, heartbeats2);
     const resultHeartbeats = await db.getHeartbeat(
       deviceId,
       timestamp,
-      timestamp + 1001,
+      timestamp + 5000,
     );
     expect(resultHeartbeats).toEqual([...heartbeats, ...heartbeats2]);
   });
