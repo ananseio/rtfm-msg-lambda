@@ -29,12 +29,14 @@ export class RecordDB {
     if (profileUuid) keyCodition += ` AND profileUuid = :profileUuid`;
 
     if (startTime) filters.push(`startTime >= :startTime`);
-    if (endTime && endTime > 0) {
-      // If there is endTime and endTime is greater than 0, we filter by endTime
-      filters.push(`endTime <= :endTime`);
-    } else if (endTime < 0) {
-      // If endTime is less than 0, we filter out anything with endTime
-      filters.push(`attribute_not_exists(endTime)`);
+    if (endTime) {
+      if ( endTime > 0) {
+        // If there is endTime and endTime is greater than 0, we filter by endTime
+        filters.push(`endTime <= :endTime`);
+      } else if (endTime < 0) {
+        // If endTime is less than 0, we filter out anything with endTime
+        filters.push(`attribute_not_exists(endTime)`);
+      }
     }
 
     const response = await this.db.query({
