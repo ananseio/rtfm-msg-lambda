@@ -58,8 +58,8 @@ describe('database', () => {
     await db.putHeartbeat(deviceId, timestamp + 1000, nodeId, heartbeats2);
     const resultHeartbeats = await db.getHeartbeat(
       deviceId,
-      `${timestamp}`,
-      `${timestamp + 1001}`,
+      timestamp,
+      timestamp + 1001,
     );
     expect(resultHeartbeats).toEqual([...heartbeats, ...heartbeats2]);
   });
