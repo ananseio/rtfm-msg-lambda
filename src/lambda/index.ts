@@ -1,6 +1,3 @@
-import { SNSDataQueryHandler } from './api/get-data';
-import { RequestAttachPolicyHandler } from './api/request-attach-policy';
-
 import { CreateDeviceHandler } from './api/device/create-device';
 import { DeleteDeviceHandler } from './api/device/delete-device';
 import { GetDeviceHandler } from './api/device/get-device';
@@ -19,9 +16,12 @@ import { GetRecordHandler } from './api/record/get-record';
 import { ListRecordHandler } from './api/record/list-record';
 import { UpdateRecordHandler } from './api/record/update-record';
 
+import { CreateUserHandler } from './api/user/create-user';
+import { CreateCustomerHandler } from './internal/customer/create-customer';
+
+import { RequestAttachPolicyHandler } from './api/request-attach-policy';
+
 export = {
-  'get-data': SNSDataQueryHandler.handler,
-  'request-attach-policy': RequestAttachPolicyHandler.handler,
   createDevice: CreateDeviceHandler.handler,
   deleteDevice: DeleteDeviceHandler.handler,
   getDevice: GetDeviceHandler.handler,
@@ -37,4 +37,7 @@ export = {
   getRecord: GetRecordHandler.handler,
   listRecord: ListRecordHandler.handler,
   updateRecord: UpdateRecordHandler.handler,
+  createUser: CreateUserHandler.handler,
+  createCustomer: CreateCustomerHandler.handler,
+  requestAttachPolicy: RequestAttachPolicyHandler.handler,
 };

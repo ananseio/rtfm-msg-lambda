@@ -1,5 +1,5 @@
 import { Iot } from 'aws-sdk';
-
+import { Settings } from '../settings';
 
 
 export class IoT {
@@ -26,5 +26,32 @@ export class IoT {
     return response.policyArn!;
   }
 
-
+  public generateCusomterPolicy (customerName: string): object {
+    return {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "iot:Connect"
+          ],
+          "Resource": `${Settings.rtfmIotArn}:*`
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "iot:Subscribe"
+          ],
+          "Resource": `${Settings.rtfmIotArn}:topicfilter/rtfm/${customerName}`
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "iot:Receive"
+          ],
+          "Resource": `${Settings.rtfmIotArn}:topic/rtfm/${customerName}`
+        }
+      ]
+    };
+  }
 }
