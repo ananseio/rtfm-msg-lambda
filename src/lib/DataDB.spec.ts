@@ -1,6 +1,6 @@
 import { DynamoDB } from 'aws-sdk';
 
-import { DB } from './DB';
+import { DataDB } from './DataDB';
 import { Heartbeat } from './models/heartbeat';
 
 import { Settings } from '../settings';
@@ -41,9 +41,9 @@ const heartbeats2: Heartbeat[] = [{
 }];
 
 describe('database', () => {
-  let db: DB;
+  let db: DataDB;
   beforeAll(() => {
-    db = new DB();
+    db = new DataDB();
   });
 
   it('should create new heartbeat', async () => {

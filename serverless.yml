@@ -10,6 +10,9 @@ provider:
   environment:
     STAGE: ${{self:custom.stage}}
     RTFM_TIMESERIES_TABLE: rtfm-device-timeseries-data-${{self:custom.stage}}
+    RTFM_COGNITO_USER_POOL_ID: ${{secret:settings:cognito.userPoolId}}
+    RTFM_IOT_ARN: ${{secret:settings:arn.iot}}
+    EMAIL_SENDER: ${{secret:settings:email.sender}}
   role: rtfmRole
   stackTags:
     OWNER: ananse
@@ -28,18 +31,17 @@ custom:
     identitySource: method.request.header.X-aws-authorizer
 
 functions:
-  sns-process:
-    handler: dist/lambda.sns-process
-  get-data:
-    handler: dist/lambda.get-data
+  create-customer:
+    handler: dist/lambda.createCustomer
+  create-user:
+    handler: dist/lambda.createUser
     events:
       - http:
-          method: GET
-          path: /data
+          method: POST
+          path: /user
           cors: ${{secret:settings:api.cors}}
-          authorizer: *authorizer
   request-attach-policy:
-    handler: dist/lambda.request-attach-policy
+    handler: dist/lambda.requestAttachPolicy
     events:
       - http:
           method: GET
@@ -294,6 +296,19 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
+    customers:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: rtfm-customers-${{self:custom.stage}}
+        AttributeDefinitions:
+          - AttributeName: name
+            AttributeType: S
+        KeySchema:
+          - AttributeName: name
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
     #sessions:
     #  Type: AWS::DynamoDB::Table
     #  Properties:
@@ -307,19 +322,7 @@ resources:
     #    ProvisionedThroughput:
     #      ReadCapacityUnits: 1
     #      WriteCapacityUnits: 1
-    #customers:
-    #  Type: AWS::DynamoDB::Table
-    #  Properties:
-    #    TableName: rtfm-customers-${{self:custom.stage}}
-    #    AttributeDefinitions:
-    #      - AttributeName: customerUuid
-    #        AttributeType: S
-    #    KeySchema:
-    #      - AttributeName: customerUuid
-    #        KeyType: HASH
-    #    ProvisionedThroughput:
-    #      ReadCapacityUnits: 1
-    #      WriteCapacityUnits: 1
+    #
     #nodes:
     #  Type: AWS::DynamoDB::Table
     #  Properties:
@@ -341,7 +344,7 @@ resources:
         RuleName: rtfm2dynamo
         TopicRulePayload:
           Sql: >-
-            SELECT deviceId, timestamp_nodeId, data FROM 'rtfm_data'
+            SELECT deviceId, timestamp_nodeId, data FROM 'rtfm/#'
           RuleDisabled: false
           Actions:
             - DynamoDBv2:
@@ -388,6 +391,8 @@ resources:
                     - dynamodb:*
                     - iot:*
                     - cognito-identity:*
+                    - cognito-idp:*
+                    - ses:SendEmail
                   Resource: "*"
         AssumeRolePolicyDocument:
           Statement:

@@ -36,7 +36,7 @@ import * as Joi from 'joi';
  *     HTTP/1.1 200 OK
  *     {
  *       "status": "success",
- *       "deviceuuid": "XXXXXXXX-XXXX-XXXX-XXXXXXXXX"
+ *       "profileUuid": "XXXXXXXX-XXXX-XXXX-XXXXXXXXX"
  *     }
  *
  * @apiError {String} error

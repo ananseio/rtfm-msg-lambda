@@ -1,6 +1,6 @@
 import { FunctionHandler, Handler, HTTP, Log, Logger } from '@ananseio/serverless-common';
 import * as Joi from 'joi';
-import { RecordDB, DB, DeviceDB, isSameHeartBeat } from '../../../lib';
+import { RecordDB, DataDB, DeviceDB, isSameHeartBeat } from '../../../lib';
 import { UpdateRecord, UpdateRecordValidator, UpdateRecordError, Record } from '../../../public';
 
 export class UpdateRecordHandler extends FunctionHandler {
@@ -8,7 +8,7 @@ export class UpdateRecordHandler extends FunctionHandler {
   public log: Logger;
 
   private db = new RecordDB();
-  private dataDB = new DB();
+  private dataDB = new DataDB();
   private deviceDB = new DeviceDB();
 
   @Handler

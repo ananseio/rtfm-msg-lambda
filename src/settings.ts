@@ -13,4 +13,6 @@ export class Settings {
 
   public static rtfmTimeSeriesTable = process.env.RTFM_TIMESERIES_TABLE!;
   public static rtfmCognitoUserPool = process.env.RTFM_COGNITO_USER_POOL_ID!;
+  public static rtfmIotArn = process.env.RTFM_IOT_ARN!;
+  public static emailSender = process.env.EMAIL_SENDER!;
 }

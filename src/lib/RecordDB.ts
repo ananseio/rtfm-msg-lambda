@@ -23,17 +23,18 @@ export class RecordDB {
   }
 
   public async listRecord (owner: string, profileUuid?: string, startTime?: number, endTime?: number): Promise<Record[]> {
+    let keyCodition = `#owner = :owner`;
     let filters: string[] = [];
-    if (profileUuid) filters.push(`profileUuid = :profileUuid`);
+    if (profileUuid) keyCodition += ` AND profileUuid = :profileUuid`;
     if (startTime) filters.push(`startTime >= :startTime`);
     if (endTime) filters.push(`endTime <= :endTime`);
 
     const response = await this.db.query({
       TableName: this.tableName,
       IndexName: 'owner-index',
-      KeyConditionExpression: `#owner = :owner`,
-      ExpressionAttributeNames: { '#owner': 'owner'},
+      KeyConditionExpression: keyCodition,
       FilterExpression: filters.join(', ') || undefined,
+      ExpressionAttributeNames: { '#owner': 'owner' },
       ExpressionAttributeValues: {
         ':owner': owner,
         ':profileUuid': profileUuid,

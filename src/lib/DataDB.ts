@@ -7,7 +7,7 @@ import { Settings } from '../settings';
 /**
  * database
  */
-export class DB {
+export class DataDB {
   private db = new DynamoDB.DocumentClient();
 
   public async putHeartbeat(deviceId: string, timestamp: number, nodeId: string, heartbeats: Heartbeat[]): Promise<boolean> {

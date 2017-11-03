@@ -1,15 +1,15 @@
 export const Service = 'rtfm';
 
 /**
- * Customer is the client who paid money to join the rtfm. It is usually a organization, e.g. school.
+ * Customer is the client who paid money to join rtfm. It is usually a organization, e.g. school.
  * token is the secret key. Used to add nodes or profile.
  */
 export type Customer = {
-  customerUuid: string;
   name: string;
-  description: string;
+  shortCode: string;
   email: string;
   token: string;
+  description?: string;
 }
 
 /**

@@ -21,7 +21,7 @@ export class ListRecordHandler extends FunctionHandler {
       }
 
       const owner = this.rawEvent.requestContext.authorizer.claims['cognito:groups'];
-      const records = await this.db.listRecord(owner, event.query.profileUuid, parseInt(event.query.startTime) || undefined, parseInt(event.query.endTime) || undefined);
+      const records = await this.db.listRecord(owner, event.query.profileUuid, parseInt(event.query.startTime!) || undefined, parseInt(event.query.endTime!) || undefined);
 
       return this.resp.ok({ status: 'success', records });
     } catch (err) {

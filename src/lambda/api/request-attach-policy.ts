@@ -8,7 +8,7 @@ export class RequestAttachPolicyHandler extends FunctionHandler {
   public log: Logger;
 
   private iot = new IoT();
-  private cognito = new Congito();
+  //private cognito = new Congito();
 
   @Handler
   @Log(HTTP)
@@ -18,12 +18,13 @@ export class RequestAttachPolicyHandler extends FunctionHandler {
       this.log.debug(event);
 
       const cognitoUserGroup = this.rawEvent.requestContext.authorizer.claims['cognito:groups'];
-      const identityId = event.parameters.identityId;
-      const logins = await this.cognito.getIdenetity(identityId);
+      if (!cognitoUserGroup) {
+        return this.resp.forbidden({ error: 'invalid user'});
+      }
 
-      this.log.debug(cognitoUserGroup + ' : ' + identityId);
-      this.log.debug(logins);
-      await this.iot.attachPolicy(identityId);
+      const identityId = event.parameters.identityId;
+      await this.iot.attachPolicy(identityId, `rtfm-policy-${cognitoUserGroup}`);
+
       return this.resp.ok({ status: 'success' });
     } catch (err) {
       this.log.error(err);
