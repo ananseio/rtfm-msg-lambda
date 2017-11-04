@@ -49,7 +49,7 @@ export class RecordDB {
         ':owner': owner,
         ':profileUuid': profileUuid,
         ':startTime': startTime,
-        ':endTime': endTime,
+        ':endTime': endTime && endTime > 0 ? endTime : undefined,
       },
     }).promise();
     return (response.Items as Record[]) || [];
