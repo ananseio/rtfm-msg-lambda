@@ -97,8 +97,8 @@ export const UpdateRecordValidator = Joi.object({
     action: Joi.string().valid('_stop'),
   }),
   body: Joi.object({
-    name: Joi.string(),
-    description: Joi.string(),
+    name: Joi.string().allow(''),
+    description: Joi.string().allow(''),
   }),
 });
 

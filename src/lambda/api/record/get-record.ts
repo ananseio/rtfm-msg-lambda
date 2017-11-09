@@ -1,6 +1,6 @@
 import { FunctionHandler, Handler, HTTP, Log, Logger } from '@ananseio/serverless-common';
 import * as Joi from 'joi';
-import { RecordDB } from '../../../lib';
+import { RecordDB, DataDB, DeviceDB, isSameHeartBeat } from '../../../lib';
 import { GetRecord, GetRecordValidator, GetRecordError, Record } from '../../../public';
 
 export class GetRecordHandler extends FunctionHandler {
@@ -8,6 +8,8 @@ export class GetRecordHandler extends FunctionHandler {
   public log: Logger;
 
   private db = new RecordDB();
+  private dataDB = new DataDB();
+  private deviceDB = new DeviceDB();
 
   @Handler
   @Log(HTTP)
@@ -29,6 +31,12 @@ export class GetRecordHandler extends FunctionHandler {
       } else if (record.owner !== owner) {
         return this.resp.unauthorized({ error: GetRecordError.notOwner + recordUuid });
       }
+
+      const device = await this.deviceDB.getDevice(record.deviceUuid);
+      const heartbeats = await this.dataDB.getHeartbeat(device!.deviceId, record.startTime, record.endTime);
+      record.dataPoints = heartbeats.filter((heartbeat, index, array) => {
+        return index === 0 || !isSameHeartBeat(heartbeat, array[index - 1]);
+      }).map(heartbeat => ({ timestamp: heartbeat.Timestamp, heartbeat: heartbeat.ComputedHeartRate }));
 
       return this.resp.ok({ status: 'success', record });
     } catch (err) {

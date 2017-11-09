@@ -81,8 +81,8 @@ export const UpdateProfileValidator = Joi.object({
     profileUuid: Joi.string().regex(uuidV4Regex).required(),
   }),
   body: Joi.object({
-    name: Joi.string(),
-    description: Joi.string(),
+    name: Joi.string().allow(''),
+    description: Joi.string().allow(''),
     groups: Joi.array().items(Joi.string()),
   }),
 })
