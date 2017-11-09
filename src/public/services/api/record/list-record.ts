@@ -21,7 +21,7 @@ import * as Joi from 'joi';
  *
  * @apiParam {String} [profileUuid]
  * @apiParam {Number} [startTime]
- * @apiParam {Number} [endTime] *Note: If the record doesn't finished, you MUST ignore endTime parameter to search that record.
+ * @apiParam {Number} [endTime] ** To search only record without endTime, set endTime to negative
  * @apiParamExample {json} Request-Example
  *     GET /rtfm/record?profileUuid=XXXXX-XXXXX-XXXXX-XXXX&startTime=15000000000000&endTime=15100000000000 HTTP/1.1
  *
