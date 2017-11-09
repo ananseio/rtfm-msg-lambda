@@ -60,8 +60,8 @@ export const CreateDeviceValidator = Joi.object({
   body: Joi.object({
     deviceId: Joi.string().required(),
     serial: Joi.string().required(),
-    name: Joi.string(),
-    description: Joi.string(),
+    name: Joi.string().allow(''),
+    description: Joi.string().allow(''),
   })
 });
 

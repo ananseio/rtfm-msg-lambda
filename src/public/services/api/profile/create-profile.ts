@@ -58,8 +58,8 @@ export enum CreateProfileError {
 export const CreateProfileValidator = Joi.object({
   method: Joi.string().valid('POST'),
   body: Joi.object({
-    name: Joi.string(),
-    description: Joi.string(),
+    name: Joi.string().allow(''),
+    description: Joi.string().allow(''),
     groups: Joi.array().items(Joi.string()),
   }),
 });

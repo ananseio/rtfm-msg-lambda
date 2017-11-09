@@ -75,8 +75,8 @@ export const CreateRecordValidator = Joi.object({
   body: Joi.object({
     deviceUuid: Joi.string().regex(uuidV4Regex).required(),
     profileUuid: Joi.string().regex(uuidV4Regex).required(),
-    name: Joi.string(),
-    description: Joi.string(),
+    name: Joi.string().allow(''),
+    description: Joi.string().allow(''),
   }),
 })
 

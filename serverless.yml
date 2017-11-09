@@ -6,7 +6,7 @@ provider:
   region: us-west-2
   variableSyntax: "\\${{([ ~:a-zA-Z0-9._\\'\",\\-\\/\\(\\)]+?)}}"
   memorySize: 128
-  timeout: 5
+  timeout: 15
   environment:
     STAGE: ${{self:custom.stage}}
     RTFM_TIMESERIES_TABLE: rtfm-device-timeseries-data-${{self:custom.stage}}

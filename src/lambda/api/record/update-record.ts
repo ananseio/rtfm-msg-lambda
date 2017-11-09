@@ -43,11 +43,11 @@ export class UpdateRecordHandler extends FunctionHandler {
         }
 
         param.endTime = Date.now();
-        const device = await this.deviceDB.getDevice(record.deviceUuid);
-        const heartbeats = await this.dataDB.getHeartbeat(device!.deviceId, record.startTime, param.endTime);
-        param.dataPoints = heartbeats.filter((heartbeat, index, array) => {
-          return index === 0 || !isSameHeartBeat(heartbeat, array[index - 1]);
-        }).map(heartbeat => ({ timestamp: heartbeat.Timestamp, heartbeat: heartbeat.ComputedHeartRate }));
+        // const device = await this.deviceDB.getDevice(record.deviceUuid);
+        // const heartbeats = await this.dataDB.getHeartbeat(device!.deviceId, record.startTime, param.endTime);
+        // param.dataPoints = heartbeats.filter((heartbeat, index, array) => {
+        //   return index === 0 || !isSameHeartBeat(heartbeat, array[index - 1]);
+        // }).map(heartbeat => ({ timestamp: heartbeat.Timestamp, heartbeat: heartbeat.ComputedHeartRate }));
       }
 
       const newRecord = await this.db.updateRecord(record.recordUuid, param);
